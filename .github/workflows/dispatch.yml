@@ -31,17 +31,20 @@ jobs:
         run: |
           CHANGED="${{ steps.get_changed.outputs.changed }}"
           if [[ $CHANGED == *common-lib* ]]; then
-            echo "changed_services=service-a service-b" >> $GITHUB_OUTPUT
+            CHANGED_SERVICES=(service-a service-b)
           else
-            echo "changed_services=$CHANGED" >> $GITHUB_OUTPUT
+            CHANGED_SERVICES=($CHANGED)
           fi
+          # Convert to JSON array
+          JSON_ARRAY=$(printf '%s\n' "${CHANGED_SERVICES[@]}" | jq -R . | jq -s .)
+          echo "changed_services=$JSON_ARRAY" >> $GITHUB_OUTPUT
 
   dispatch:
     needs: detect-changes
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [${{ needs.detect-changes.outputs.changed_services }}]
+        service: ${{ fromJson(needs.detect-changes.outputs.changed_services) }}
     steps:
       - name: Trigger ${{ matrix.service }} workflow
         run: |
