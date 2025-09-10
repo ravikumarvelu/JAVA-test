@@ -45,7 +45,10 @@ jobs:
     strategy:
       matrix:
         service: ${{ fromJson(needs.detect-changes.outputs.changed_services) }}
-    steps:
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Trigger ${{ matrix.service }} workflow
         run: |
           gh workflow run "${{ matrix.service }}-pipeline.yml" -f environment=dev
