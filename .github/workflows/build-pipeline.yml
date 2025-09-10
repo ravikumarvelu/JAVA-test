@@ -1,4 +1,4 @@
-name: service a
+name: build
 
 on:
     workflow_call:
@@ -6,10 +6,8 @@ on:
 
 
 jobs:
-    build:
-        uses: ./.github/workflows/build-pipeline.yml
     run-service:
         runs-on: ubuntu-latest
         steps:
             - name: echo the name
-              run: echo "service a"
+              run: echo "build"
