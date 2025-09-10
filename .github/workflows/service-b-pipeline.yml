@@ -2,6 +2,7 @@ name: service b
 
 on:
     workflow_call:
+    repository_dispatch:
 
 
 jobs:
