@@ -35,9 +35,9 @@ jobs:
           else
             CHANGED_SERVICES=($CHANGED)
           fi
-          # Convert to JSON array
-          JSON_ARRAY=$(printf '%s\n' "${CHANGED_SERVICES[@]}" | jq -R . | jq -s .)
-          echo "changed_services=$JSON_ARRAY" >> $GITHUB_OUTPUT
+          # Convert to JSON array (single line)
+          JSON_ARRAY=$(printf '%s\n' "${CHANGED_SERVICES[@]}" | jq -R . | jq -s -c .)
+          echo "changed_services=${JSON_ARRAY}" >> $GITHUB_OUTPUT
 
   dispatch:
     needs: detect-changes
