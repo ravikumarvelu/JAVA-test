@@ -1,0 +1,13 @@
+name: build
+
+on:
+    workflow_call:
+    repository_dispatch:
+
+
+jobs:
+    run-service:
+        runs-on: ubuntu-latest
+        steps:
+            - name: echo the name
+              run: echo "Test pipeline"
