@@ -6,7 +6,10 @@ on:
 
 
 jobs:
+    build:
+        uses: ./.github/workflows/build-pipeline.yml
     run-service:
+        needs: build
         runs-on: ubuntu-latest
         steps:
             - name: echo the name

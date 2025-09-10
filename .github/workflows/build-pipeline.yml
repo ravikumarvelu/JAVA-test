@@ -10,4 +10,4 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: echo the name
-              run: echo "build"
+              run: echo "build pipeline"
