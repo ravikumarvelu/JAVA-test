@@ -39,18 +39,12 @@ jobs:
           JSON_ARRAY=$(printf '%s\n' "${CHANGED_SERVICES[@]}" | jq -R . | jq -s -c .)
           echo "changed_services=${JSON_ARRAY}" >> $GITHUB_OUTPUT
 
-  dispatch:
+  run-service-a:
+    if: contains(needs.detect-changes.outputs.changed_services, 'service-a')
     needs: detect-changes
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.detect-changes.outputs.changed_services) }}
-    steps: 
-      - name: Checkout code
-        uses: actions/checkout@v4
+    uses: ./.github/workflows/service-a-pipeline.yml
 
-      - name: Trigger ${{ matrix.service }} workflow
-        run: |
-          gh workflow run "${{ matrix.service }}-pipeline.yml" -f environment=dev
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run-service-b:
+    if: contains(needs.detect-changes.outputs.changed_services, 'service-b')
+    needs: detect-changes
+    uses: ./.github/workflows/service-b-pipeline.yml
