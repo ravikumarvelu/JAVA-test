@@ -1,0 +1,12 @@
+name: service b
+
+on:
+    workflow_call:
+
+
+jobs:
+    run-service:
+        runs-on: ubuntu-latest
+        steps:
+            - name: echo the name
+              run: echo "service b"

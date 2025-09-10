@@ -1,0 +1,50 @@
+name: Dispatch Microservice Workflows
+
+on:
+  push:
+    branches:
+      - dev
+      - qa
+      - main
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.set-changed.outputs.changed }}
+      changed_services: ${{ steps.set-changed.outputs.changed_services }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed folders
+        id: get_changed
+        run: |
+          git fetch origin ${{ github.event.before }}
+          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '/' | cut -d'/' -f1 | sort -u | tr '\n' ' ')
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+
+      - name: Set changed services
+        id: set-changed
+        run: |
+          CHANGED="${{ steps.get_changed.outputs.changed }}"
+          if [[ $CHANGED == *common-lib* ]]; then
+            echo "changed_services=service-a service-b" >> $GITHUB_OUTPUT
+          else
+            echo "changed_services=$CHANGED" >> $GITHUB_OUTPUT
+          fi
+
+  dispatch:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [${{ needs.detect-changes.outputs.changed_services }}]
+    steps:
+      - name: Trigger ${{ matrix.service }} workflow
+        run: |
+          gh workflow run "${{ matrix.service }}-pipeline.yml" -f environment=dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
