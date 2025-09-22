@@ -2,11 +2,16 @@ name: build
 
 on:
     workflow_call:
+        inputs:
+            can-run:
+                default: true
+                type: boolean
     repository_dispatch:
 
 
 jobs:
     run-service:
+        if: ${{inputs.can-run}}
         runs-on: ubuntu-latest
         steps:
             - name: echo the name
