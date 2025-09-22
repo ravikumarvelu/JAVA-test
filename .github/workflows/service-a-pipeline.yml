@@ -13,6 +13,7 @@ jobs:
         uses: ./.github/workflows/build-pipeline.yml
     run-service:
         needs: [test,build]
+        if: ${{ needs.test.result != 'failure' }}
         runs-on: ubuntu-latest
         steps:
             - name: echo the name
